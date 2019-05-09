@@ -1,10 +1,10 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#define INFO(Format, ...) Logger->Info(Format, ##__VA_ARGS__);
-#define DEBUG(Format, ...) Logger->Debug(Format, ##__VA_ARGS__);
-#define WARN(Format, ...) Logger->Warning(Format, ##__VA_ARGS__);
-#define ERROR(Format, ...) Logger->Error(__FUNCTION__, __LINE__, Format, ##__VA_ARGS__);
+#define INFO(Format, ...) Logger->Info(Logger, Format, ##__VA_ARGS__);
+#define DEBUG(Format, ...) Logger->Debug(Logger, Format, ##__VA_ARGS__);
+#define WARN(Format, ...) Logger->Warning(Logger, Format, ##__VA_ARGS__);
+#define ERROR(Format, ...) Logger->Error(Logger, __FUNCTION__, __LINE__, Format, ##__VA_ARGS__);
 
 typedef enum OutputType {
   STDOUT,
@@ -12,15 +12,13 @@ typedef enum OutputType {
 } OUTPUT;
 
 typedef struct LOGGER_STRUCTURE {
-  void (*Dispose) ();
-  void (*Info) (const char* Format, ...);
-  void (*Debug) (const char* Format, ...);
-  void (*Error) (const char* Function, int Line, const char* Format, ...);
-  void (*Warning) (const char* Format, ...);
+  void (*Dispose) (struct LOGGER_STRUCTURE* This);
+  void (*Info) (struct LOGGER_STRUCTURE* This, const char* Format, ...);
+  void (*Debug) (struct LOGGER_STRUCTURE* This, const char* Format, ...);
+  void (*Error) (struct LOGGER_STRUCTURE* This, const char* Function, int Line, const char* Format, ...);
+  void (*Warning) (struct LOGGER_STRUCTURE* This, const char* Format, ...);
 } LOGGER;
 
-int Logger_New(OUTPUT Output, ...);
-
-extern LOGGER* Logger;
+LOGGER* Logger_New(OUTPUT Output, ...);
 
 #endif

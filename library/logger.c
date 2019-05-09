@@ -2,94 +2,84 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "logger.h"
+#include "logger_internals.h"
 
-LOGGER* Logger = NULL;
-
-static OUTPUT pOutput = STDOUT;
-static FILE* pFileBuffer = NULL;
-
-void Logger_Debug (const char* Format, ...) {
-  fprintf(pFileBuffer, "DEBUG: ");
+void Logger_Debug (LOGGER_INTERNAL* This, const char* Format, ...) {
+  fprintf(This->FileBuffer, "DEBUG: ");
 
   va_list arg;
   va_start (arg, Format);
-  vfprintf (pFileBuffer, Format, arg);
+  vfprintf (This->FileBuffer, Format, arg);
   va_end (arg);
 
-  fprintf(pFileBuffer, "\n");
+  fprintf(This->FileBuffer, "\n");
   return;
 }
 
-void Logger_Info (const char* Format, ...) {
-  fprintf(pFileBuffer, "INFO: ");
+void Logger_Info (LOGGER_INTERNAL* This, const char* Format, ...) {
+  fprintf(This->FileBuffer, "INFO: ");
 
   va_list arg;
   va_start (arg, Format);
-  vfprintf (pFileBuffer, Format, arg);
+  vfprintf (This->FileBuffer, Format, arg);
   va_end (arg);
 
-  fprintf(pFileBuffer, "\n");
+  fprintf(This->FileBuffer, "\n");
   return;
 }
 
-void Logger_Error (const char* Function, int Line, const char* Format, ...) {
-  fprintf(pFileBuffer, "ERROR %s.c:%d: ", Function, Line);
+void Logger_Error (LOGGER_INTERNAL* This, const char* Function, int Line, const char* Format, ...) {
+  fprintf(This->FileBuffer, "ERROR %s.c:%d: ", Function, Line);
 
   va_list arg;
   va_start (arg, Format);
-  vfprintf (pFileBuffer, Format, arg);
+  vfprintf (This->FileBuffer, Format, arg);
   va_end (arg);
 
-  fprintf(pFileBuffer, "\n");
+  fprintf(This->FileBuffer, "\n");
 }
 
-void Logger_Warning (const char* Format, ...) {
-  fprintf(pFileBuffer, "WARNING: ");
+void Logger_Warning (LOGGER_INTERNAL* This, const char* Format, ...) {
+  fprintf(This->FileBuffer, "WARNING: ");
 
   va_list arg;
   va_start (arg, Format);
-  vfprintf (pFileBuffer, Format, arg);
+  vfprintf (This->FileBuffer, Format, arg);
   va_end (arg);
 
-  fprintf(pFileBuffer, "\n");
+  fprintf(This->FileBuffer, "\n");
 }
 
-void Logger_Dispose() {
-  if (Logger != NULL) {
-    free(Logger);
-    Logger = NULL;
-
-    if (pOutput == BINARY_FILE) {
-      fclose(pFileBuffer);
-      pFileBuffer = NULL;
+void Logger_Dispose(LOGGER_INTERNAL* This) {
+  if (This != NULL) {
+    if (This->Output == BINARY_FILE) {
+      fclose(This->FileBuffer);
+      This->FileBuffer = NULL;
     }
+
+    free(This);
+    This = NULL;
   }
 }
 
-int Logger_New(OUTPUT Output, ...) {
-  int Status = 0;
+LOGGER* Logger_New(OUTPUT Output, ...) {
+  LOGGER_INTERNAL* Logger = NULL;
 
-  if (Logger != NULL) {
-    Logger->Warning("You are trying to allocate Logger Library again!");
+  Logger = calloc(1, sizeof(LOGGER_INTERNAL));
+  if (Logger == NULL) {
+    printf("ERROR: Allocate Logger data strucuture failed\n");
     goto FINISH;
   }
 
   if (Output == BINARY_FILE) {
     va_list arg;
     va_start (arg, Output);
-    pFileBuffer = fopen(va_arg(arg, char*), "a+");
+    Logger->FileBuffer = fopen(va_arg(arg, char*), "a+");
     va_end (arg);
   } else {
-    pFileBuffer = stdout;
+    Logger->FileBuffer = stdout;
   }
-
-  Logger = calloc(1, sizeof(LOGGER));
-  if (Logger == NULL) {
-    printf("ERROR: Allocate Logger data strucuture failed\n");
-    Status = -1;
-    goto FINISH;
-  }
+  Logger->Output = Output;
 
   Logger->Dispose = Logger_Dispose;
   Logger->Info = Logger_Info;
@@ -98,7 +88,7 @@ int Logger_New(OUTPUT Output, ...) {
   Logger->Warning = Logger_Warning;
 
 FINISH:
-  if (Logger != NULL) Logger->Info("Logger ready");
+  if (Logger != NULL) Logger->Info(Logger, "Logger ready");
 
-  return Status;
+  return (LOGGER*) Logger;
 }
