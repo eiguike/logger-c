@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: ~/logger-c
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt update
+            sudo apt install cmake
+      - run:
+          name: Build mouse-posyx
+          command: |
+            mkdir build
+            cd build
+            cmake ..
+            make
+workflows:
+ version: 2
+ build_commits:
+   jobs:
+     - build
