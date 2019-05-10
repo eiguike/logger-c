@@ -7,8 +7,10 @@
 #define ERROR(Format, ...) Logger->Error(Logger, __FUNCTION__, __LINE__, Format, ##__VA_ARGS__);
 
 typedef enum OutputType {
+  NONE,
   STDOUT,
-  BINARY_FILE
+  BINARY_FILE,
+  BOTH
 } OUTPUT;
 
 typedef struct LOGGER_STRUCTURE {
