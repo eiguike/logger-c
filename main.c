@@ -7,7 +7,8 @@
 LOGGER* Logger;
 
 int main() {
-  Logger = Logger_New(BINARY_FILE, "test.log");
+
+  Logger = Logger_New(STDOUT, "test.log");
   INFO("Hy my name is %s project!", "Logger-c")
   INFO("I can do math! %d + %d = %d", 2, 2, 4)
   DEBUG("This is a debug message!");
@@ -15,7 +16,7 @@ int main() {
   ERROR("Serious! This is a error message!");
   Logger->Dispose(Logger);
 
-  Logger = Logger_New(STDOUT);
+  Logger = Logger_New(BINARY_FILE, "test.log");
   INFO("Hy my name is %s project!", "Logger-c")
   INFO("I can do math! %d + %d = %d", 2, 2, 4)
   DEBUG("This is a debug message!");

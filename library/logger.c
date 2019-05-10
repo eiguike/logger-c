@@ -62,6 +62,41 @@ void Logger_Dispose(LOGGER_INTERNAL* This) {
   }
 }
 
+void LoggerInternals_SetOutput(LOGGER_INTERNAL* Logger, OUTPUT Output, va_list arg) {
+  va_list Argument;
+
+  if (Logger == NULL) {
+    goto FINISH;
+  }
+
+  Logger->Output = Output;
+
+  switch(Logger->Output) {
+    case NONE:
+      Logger->FileBuffer = fopen("/dev/null", "w");
+      if (Logger->FileBuffer == NULL) {
+        Logger->FileBuffer = fopen("nul", "w");
+      }
+      break;
+    case STDOUT:
+      Logger->FileBuffer = stdout;
+      break;
+    case BINARY_FILE:
+    case BOTH:
+      va_copy(Argument, arg);
+      Logger->FileBuffer = fopen(va_arg(Argument, char*), "a+");
+      va_end(Argument);
+      break;
+    default:
+      Logger->Output = STDOUT;
+      Logger->FileBuffer = stdout;
+      goto FINISH;
+  }
+
+FINISH:
+  return;
+}
+
 LOGGER* Logger_New(OUTPUT Output, ...) {
   LOGGER_INTERNAL* Logger = NULL;
 
@@ -71,15 +106,10 @@ LOGGER* Logger_New(OUTPUT Output, ...) {
     goto FINISH;
   }
 
-  if (Output == BINARY_FILE) {
-    va_list arg;
-    va_start (arg, Output);
-    Logger->FileBuffer = fopen(va_arg(arg, char*), "a+");
-    va_end (arg);
-  } else {
-    Logger->FileBuffer = stdout;
-  }
-  Logger->Output = Output;
+  va_list arg;
+  va_start(arg, Output);
+  LoggerInternals_SetOutput(Logger, Output, arg);
+  va_end (arg);
 
   Logger->Dispose = Logger_Dispose;
   Logger->Info = Logger_Info;

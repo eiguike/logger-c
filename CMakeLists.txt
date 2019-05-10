@@ -10,3 +10,6 @@ set(SOURCE_FILES main.c)
 add_executable(logger-c ${SOURCE_FILES})
 
 target_link_libraries(logger-c Logger)
+
+enable_testing()
+add_subdirectory(tests)
