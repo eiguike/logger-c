@@ -1,21 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "logger.h"
 
-void testBasic()
-{
-  // do some nice calculation; store the results in `foo` and `bar`,
-  // respectively
-  printf("HEUHEUHEU\n");
-  int i = 1;
-  i = 1/(i - 1);
-}
+LOGGER* Logger;
 
-void testAdvanced()
+int testPasses()
 {
+  Logger = Logger_New(STDOUT, "test.log");
+  INFO("Hy my name is %s project!", "Logger-c")
+  INFO("I can do math! %d + %d = %d", 2, 2, 4)
+  DEBUG("This is a debug message!");
+  WARN("This is a warning message!");
+  ERROR("Serious! This is a error message!");
+  Logger->Dispose(Logger);
+  return 0;
 }
 
 int main(int argc, char** argv)
 {
-  testBasic();
-  testAdvanced();
+  return testPasses();
 }
