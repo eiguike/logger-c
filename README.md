@@ -1,4 +1,4 @@
-# logger-c
+# logger-c [![CircleCI](https://circleci.com/gh/eiguike/logger-c.svg?style=svg)](https://circleci.com/gh/eiguike/logger-c)
 ---
 
 Create logs for your application.
