@@ -6,7 +6,7 @@ LOGGER* Logger;
 
 int testPasses()
 {
-  Logger = Logger_New(STDOUT, "test.log");
+  Logger = Logger_New(STDOUT, ALL_MESSAGES, "test.log");
   INFO("Hy my name is %s project!", "Logger-c")
   INFO("I can do math! %d + %d = %d", 2, 2, 4)
   DEBUG("This is a debug message!");

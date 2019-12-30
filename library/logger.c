@@ -4,8 +4,10 @@
 
 #include "logger_internals.h"
 
-void Logger_Debug (LOGGER_INTERNAL* This, const char* Format, ...) {
-  fprintf(This->FileBuffer, "DEBUG: ");
+void Logger_Debug (LOGGER_INTERNAL* This, const char* Function, int Line, const char* Format, ...) {
+  if (ALL_MESSAGES > This->LoggerLevel) return;
+
+  fprintf(This->FileBuffer, "DEBUG %s:%d: ", Function, Line);
 
   va_list arg;
   va_start (arg, Format);
@@ -13,10 +15,11 @@ void Logger_Debug (LOGGER_INTERNAL* This, const char* Format, ...) {
   va_end (arg);
 
   fprintf(This->FileBuffer, "\n");
-  return;
 }
 
 void Logger_Info (LOGGER_INTERNAL* This, const char* Format, ...) {
+  if (INFOS_AND_ERRORS > This->LoggerLevel) return;
+
   fprintf(This->FileBuffer, "INFO: ");
 
   va_list arg;
@@ -25,11 +28,12 @@ void Logger_Info (LOGGER_INTERNAL* This, const char* Format, ...) {
   va_end (arg);
 
   fprintf(This->FileBuffer, "\n");
-  return;
 }
 
 void Logger_Error (LOGGER_INTERNAL* This, const char* Function, int Line, const char* Format, ...) {
-  fprintf(This->FileBuffer, "ERROR %s.c:%d: ", Function, Line);
+  if (ONLY_ERRORS > This->LoggerLevel) return;
+
+  fprintf(This->FileBuffer, "ERROR %s:%d: ", Function, Line);
 
   va_list arg;
   va_start (arg, Format);
@@ -40,6 +44,8 @@ void Logger_Error (LOGGER_INTERNAL* This, const char* Function, int Line, const 
 }
 
 void Logger_Warning (LOGGER_INTERNAL* This, const char* Format, ...) {
+  if (ALL_MESSAGES_WITHOUT_DEBUG > This->LoggerLevel) return;
+
   fprintf(This->FileBuffer, "WARNING: ");
 
   va_list arg;
@@ -97,7 +103,7 @@ FINISH:
   return;
 }
 
-LOGGER* Logger_New(OUTPUT Output, ...) {
+LOGGER* Logger_New(OUTPUT Output, LOGGER_LEVEL LoggerLevel, ...) {
   LOGGER_INTERNAL* Logger = NULL;
 
   Logger = calloc(1, sizeof(LOGGER_INTERNAL));
@@ -107,10 +113,11 @@ LOGGER* Logger_New(OUTPUT Output, ...) {
   }
 
   va_list arg;
-  va_start(arg, Output);
+  va_start(arg, LoggerLevel);
   LoggerInternals_SetOutput(Logger, Output, arg);
   va_end (arg);
 
+  Logger->LoggerLevel = LoggerLevel;
   Logger->Dispose = Logger_Dispose;
   Logger->Info = Logger_Info;
   Logger->Debug = Logger_Debug;
