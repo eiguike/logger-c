@@ -1,10 +1,10 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#define INFO(Format, ...) Logger->Info(Logger, Format, ##__VA_ARGS__);
-#define DEBUG(Format, ...) Logger->Debug(Logger, __FUNCTION__, __LINE__, Format, ##__VA_ARGS__);
-#define WARN(Format, ...) Logger->Warning(Logger, Format, ##__VA_ARGS__);
-#define ERROR(Format, ...) Logger->Error(Logger, __FUNCTION__, __LINE__, Format, ##__VA_ARGS__);
+#define INFO(Format, ...) gLogger->Info(gLogger, Format, ##__VA_ARGS__);
+#define DEBUG(Format, ...) gLogger->Debug(gLogger, __FUNCTION__, __LINE__, Format, ##__VA_ARGS__);
+#define WARN(Format, ...) gLogger->Warning(gLogger, Format, ##__VA_ARGS__);
+#define ERROR(Format, ...) gLogger->Error(gLogger, __FUNCTION__, __LINE__, Format, ##__VA_ARGS__);
 
 typedef enum OutputType {
   NONE,
