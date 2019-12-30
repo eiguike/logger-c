@@ -30,4 +30,6 @@ typedef struct LOGGER_STRUCTURE {
 
 LOGGER* Logger_New(OUTPUT Output, LOGGER_LEVEL LoggerLevel, ...);
 
+extern LOGGER* gLogger;
+
 #endif
