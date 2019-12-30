@@ -36,10 +36,10 @@ $ git clone https://github.com/eiguike/logger-c.git
 
 3. Instance it passing the type of output (refers to `logger.h`)
 ```c
-  Logger_New(NONE); 
-  Logger_New(STDOUT); 
-  Logger_New(FILE, "filename.log"); 
-  Logger_New(BOTH, "filename.log"); 
+  Logger_New(NONE, ALL_MESSAGES); 
+  Logger_New(STDOUT, ALL_MESSAGES); 
+  Logger_New(FILE, ALL_MESSAGES, "filename.log"); 
+  Logger_New(BOTH, ALL_MESSAGES, "filename.log"); 
 ```
 
 4. Use it!
